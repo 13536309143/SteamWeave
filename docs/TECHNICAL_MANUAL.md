@@ -87,7 +87,7 @@ Production training uses seed 20261013 and a 21/3/6 trajectory-group fitting/cal
 
 ## 7. Predictive intervals
 
-Separate 5% and 95% quantile models operate on the fusion representation. On held-out calibration groups, the maximum interval violation within each target inspection event forms a calibration score. The selected score quantile expands both bounds. Interval crossing is corrected by ordering the two estimates.
+The legacy head uses separate 5% and 95% quantile models operating on the fusion representation. On held-out calibration groups, the maximum interval violation within each target inspection event forms a calibration score. The selected score quantile expands both bounds. Interval crossing is corrected by ordering the two estimates.
 
 Report row coverage, event coverage and interval width. Nominal 90% coverage is empirical here: events inside a trajectory are dependent, and future-period shifts can change behavior. Negative lower bounds are possible because bounds are not silently clipped to a physical range unspecified by the runtime contract.
 
@@ -175,3 +175,26 @@ Publish original data, notices, code, fixed feature assets and experiment output
 The benchmark is synthetic and contains repeated input trajectories. Effective group count is thirty. LLM semantic labels are not human-validated ground truth. Some maintenance/report-age interactions have no natural examples in this copy; synthetic report-delay tests test sensitivity, not a proven operational distribution. The neural reconstruction has disclosed missing implementation details and a capped budget. No module is assumed beneficial before its ablation is examined.
 
 Further work should pre-register development-set model selection, expand independent simulation seeds or industrial data, assess report-label quality, and test inference cost alongside forecasting error. Keep outer test groups for final assessment.
+
+## 13. Optional v2 optimization
+
+The v2 prediction head describes current image geometry with a quadratic fit and retains strictly earlier same-device curve descriptors, elapsed ages and change rates. An observed repair resets that curve history before the current observation is used. No historical target enters these features. A current-modality mask leaves previously available history intact; this is not a simulated outage of the whole historical stream.
+
+Eight fixed candidates compare geometry/history/semantic views, absolute or squared error boosting, Extra Trees and a polynomial ridge baseline. Three inner trajectory-group folds choose the candidate by MAE. Temporal runs use three forward event windows inside the fitting period, purging records whose target inspection occurs after the fitting cutoff. Outer calibration groups determine a symmetric event-max error interval only; outer test records do not select a candidate. This is an exploratory improvement on a previously examined benchmark, not a fresh blind dataset. The availability gate was added after initial missing-curve diagnostics. The temporal candidate did not improve this copy; keep the legacy temporal checkpoint unless a separate validation study supports a change.
+
+```bash
+# Add the optimized head to an existing matching legacy checkpoint.
+.venv/bin/python -m sg_agents.cli optimize --offline
+# Train both layers from a fresh clone.
+.venv/bin/python -m sg_agents.cli train --offline --method optimized
+# Future-period checkpoint with forward inner selection.
+.venv/bin/python -m sg_agents.cli train --offline --split temporal --method optimized
+# Restore the original forecasting method.
+.venv/bin/python -m sg_agents.cli train --offline --method legacy
+```
+
+Original checkpoints are retained under ignored `artifacts/baselines/legacy-v1/`. With a current curve, v2 uses the selected geometry/history head and original experts remain diagnostic. Without a current curve, it uses the original modality-dropout expert fusion. This availability gate preserves original missing-curve point predictions. Responses expose `prediction_method`, `forecast_head` and `legacy_prediction_adu`. The interface and audit warnings disclose this distinction. Retraining through the service preserves the active method; `POST /api/train?method=legacy|optimized` chooses it explicitly.
+
+Reproduce the nested comparisons with `python -m research.optimize run`, then `python -m research.optimize summarize`. The first command uses core dependencies; figure/report generation also needs matplotlib. See the [v2 report](../reports/optimization/OPTIMIZATION.md) for paired results, per-fold choices, raw predictions and limitations. Public inner-fold row indices use lossless half-open ranges (`range(start, stop)`) in dataset observation order.
+
+Method references: [histogram boosting losses](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html), [grouped cross-validation](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html), [nested selection and evaluation](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html).

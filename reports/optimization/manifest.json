@@ -1,0 +1,102 @@
+{
+  "version": "curve-history-v2",
+  "candidates": [
+    {
+      "name": "geometry_hgb_l2",
+      "family": "hgb",
+      "view": "geometry",
+      "loss": "squared_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "geometry_hgb_l1",
+      "family": "hgb",
+      "view": "geometry",
+      "loss": "absolute_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "history_hgb_l2",
+      "family": "hgb",
+      "view": "history",
+      "loss": "squared_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "history_hgb_l1",
+      "family": "hgb",
+      "view": "history",
+      "loss": "absolute_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "semantic_history_hgb_l1",
+      "family": "hgb",
+      "view": "semantic",
+      "loss": "absolute_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "history_hgb_smooth",
+      "family": "hgb",
+      "view": "history",
+      "loss": "squared_error",
+      "leaves": 15,
+      "minimum": 25,
+      "iterations": 450,
+      "l2": 4.0
+    },
+    {
+      "name": "history_extra_trees",
+      "family": "extra",
+      "view": "history",
+      "loss": "squared_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    },
+    {
+      "name": "geometry_polynomial_ridge",
+      "family": "ridge",
+      "view": "geometry",
+      "loss": "squared_error",
+      "leaves": 31,
+      "minimum": 12,
+      "iterations": 450,
+      "l2": 1.0
+    }
+  ],
+  "seeds": [
+    17,
+    41,
+    73
+  ],
+  "protocols": [
+    "grouped_cv",
+    "temporal"
+  ],
+  "dataset_fingerprint": "155d422a62b0b7d61f84d4df9ce09a75ebdc939d95cb9c14bb8f65c303cc1b5d",
+  "inner_folds": 3,
+  "source_sha256": "0ed4049731d862fbc2ff1715a6b4f3a5d74a2f91188cbc77b0760bd73eb34dc0",
+  "selection": "Inner training-only MAE; outer calibration used only for prediction interval",
+  "scope": "Exploratory follow-up on an examined benchmark; no new independent dataset",
+  "history": "Strictly earlier same-device curve features; reset on observed repair; no labels",
+  "routing": "Current curve available: selected head; missing: original modality-dropout expert fusion",
+  "routing_provenance": "Added after initial exploratory missing-curve diagnostics; not a blind pre-registered benchmark"
+}

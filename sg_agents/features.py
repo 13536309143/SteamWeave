@@ -88,9 +88,12 @@ def build_features(records, image_cache=None, progress=None):
         image_meta.append(meta)
         if progress and i%1000==0:
             progress(i,len(records))
-    return {'numeric':np.asarray(numerical),'image':np.asarray(curve),
+    result={'numeric':np.asarray(numerical),'image':np.asarray(curve),
             'text':np.asarray(text),'maintenance':np.asarray(maintenance),
             'quality':np.asarray(quality),'state':state,'image_meta':image_meta,'semantic_evidence':semantic_evidence}
+    from .optimization import causal_curve_history
+    result['curve_history']=causal_curve_history(records,result)
+    return result
 
 def fusion_matrix(predictions, features):
     return np.c_[predictions, features['numeric'],features['quality']]

@@ -52,7 +52,7 @@ cd SteamWeave
 python3.14 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 cp .env.example .env
-.venv/bin/python -m sg_agents.cli train --offline
+.venv/bin/python -m sg_agents.cli train --offline --method optimized
 .venv/bin/python scripts/service.py start
 ```
 
@@ -94,7 +94,23 @@ OPENAI_MODEL=your-gpt-model
 
 Changing only explanation preserves the predictive model. Extraction caches are isolated by provider/model/endpoint/protocol. Qwen regional endpoints must match the key. See [API configuration details](docs/TECHNICAL_MANUAL.md#8-api-suppliers-credentials-and-cache-provenance).
 
-## Completed experiments
+## v2 optimization results
+
+Added **18 outer evaluations**, each comparing eight fixed candidates with three inner folds inside the fitting period. The new head describes curve shape, adds repair-reset historical curves and change rates, and allows absolute-error models to compete. Missing current curves use the original augmented expert fusion.
+
+| Scenario | Original MAE / adu | Optimized MAE / adu |
+| --- | ---: | ---: |
+| Five grouped folds × three seeds | 4.853 ± 0.405 | **4.089 ± 0.314** |
+| Serving model's fixed holdout | 5.094 | **4.077** |
+| Future-period candidate, three runs | **11.140** | 11.501 ± 0.029 |
+
+Grouped MAE decreases by **15.7%** and the serving holdout error by **20.0%**. The temporal candidate does not improve, so the original temporal checkpoint is retained. Optimized intervals are wider: grouped mean width 35.072 adu versus 28.818 adu originally. With all current curves masked, point predictions equal the original method; previously observed history remains available.
+
+This is exploratory development on an examined benchmark. The availability gate was added after initial missing-curve diagnostics; it is not a new blind test or a matched-condition superiority claim over the paper. Candidate/parameter selection stays inside fitting data and targets never enter prediction features. See the [v2 report](reports/optimization/OPTIMIZATION.md), [fold metrics](reports/optimization/fold_metrics.csv) and [inner selection audits](reports/optimization/selection_audits.json).
+
+Original expert outputs remain diagnostic. Available curves use the new prediction head; missing curves use original expert fusion. Run `python -m sg_agents.cli optimize --offline` to upgrade an existing matching checkpoint, or follow the quick start to train from scratch. Restore v1 with `python -m sg_agents.cli train --offline --method legacy`.
+
+## Original complete benchmark
 
 **23 outer evaluations · 151 model evaluations · 300 pressure conditions · 6 neural fits.** Grouped CV uses five folds and three seeds; six ablations and pressure tests cover all five grouped folds of seed 17. Neural reconstruction uses one seed.
 

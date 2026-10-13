@@ -1,0 +1,9 @@
+{
+  "groups": 30,
+  "delta_optimized_minus_original_group_mae": -0.7413402589718776,
+  "bootstrap_95": [
+    -0.9145954116434266,
+    -0.5731057548969336
+  ],
+  "note": "Resamples thirty trajectories, not independent records; negative is improvement."
+}

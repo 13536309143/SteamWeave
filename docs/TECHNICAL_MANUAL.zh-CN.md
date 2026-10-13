@@ -87,7 +87,7 @@ $$
 
 ## 7. 预测区间
 
-独立的 5% 和 95% 分位数模型使用融合表示。在留出校准组中，对每个目标巡检事件取最大区间越界误差，再使用对应分位数扩展上下界。若上下分位数交叉，先按大小排序。
+原版预测头用独立的 5% 和 95% 分位数模型处理融合表示。在留出校准组中，对每个目标巡检事件取最大区间越界误差，再使用对应分位数扩展上下界。若上下分位数交叉，先按大小排序。
 
 报告逐记录覆盖率、逐事件覆盖率及区间宽度。这里的标称 90% 属于经验校准：同一轨迹内事件相关，未来时段分布也可能改变。运行协议没有自动假定物理截断范围，因此下界可能为负，不进行无提示裁剪。
 
@@ -175,3 +175,26 @@ MiniMax 已完成真实请求验证。GPT、千问与自定义接口完成传输
 这是含重复输入轨迹的模拟基准，轨迹组数为三十。LLM 语义标签不是人工验证真值。本副本中部分维修/文本年龄交互没有自然样本；合成延迟测试只能验证敏感性。深度重建有已披露的实现缺项与预算上限。任何模块的收益均需由消融验证。
 
 后续应预先规定开发集上的模型选择，增加独立模拟种子或工业数据，审查语义标签质量，并同时评估推理成本与预测误差。外层测试组保留用于最终评估。
+
+## 13. 可选的 v2 优化
+
+v2 预测头用二次拟合描述当前图像曲线，并保留严格早于当前观察的同设备曲线描述、时间间隔和变化率。检测到维修后，在处理当前观察之前重置曲线历史。历史目标标签不进入特征。屏蔽当前模态仍保留过去已经获得的历史，这不同于整个历史流中断。
+
+八个固定候选比较曲线几何/历史/语义特征、绝对误差或平方误差提升模型、Extra Trees 与多项式岭回归。三折内层轨迹分组验证按 MAE 选择候选；时间实验在训练期内采用三个前向巡检事件窗口，并剔除目标巡检跨越训练截止点的记录。外层校准组仅确定对称的事件最大误差区间；外层测试记录不参与候选选择。这是对已查看基准的探索性改善，不是新盲测数据集。可用性切换是在首次缺失曲线诊断之后加入的。时间候选没有改善当前副本，除非另有验证支持，建议保留原版时间检查点。
+
+```bash
+# 给已有且匹配的原版检查点添加优化头。
+.venv/bin/python -m sg_agents.cli optimize --offline
+# 从新克隆仓库训练两个层次。
+.venv/bin/python -m sg_agents.cli train --offline --method optimized
+# 采用前向内层选择的未来时段检查点。
+.venv/bin/python -m sg_agents.cli train --offline --split temporal --method optimized
+# 恢复原版预测方法。
+.venv/bin/python -m sg_agents.cli train --offline --method legacy
+```
+
+原版检查点保留在已忽略的 `artifacts/baselines/legacy-v1/`。当前曲线可用时，v2 使用训练内选出的曲线/历史预测头，原版专家输出作为诊断；当前曲线缺失时，使用原版模态 dropout 专家融合。此可用性切换保留原版缺失曲线点预测。响应提供 `prediction_method`、`forecast_head` 与 `legacy_prediction_adu`，界面和审计警告明确说明区别。通过服务重新训练会保留当前方法；`POST /api/train?method=legacy|optimized` 可明确指定。
+
+运行 `python -m research.optimize run` 复现嵌套比较，再运行 `python -m research.optimize summarize` 生成汇总。前者使用核心依赖，图表/报告生成还需要 matplotlib。[v2 报告](../reports/optimization/OPTIMIZATION.zh-CN.md)提供配对结果、逐折选择、原始预测与局限。公开的内层行索引按数据集观察顺序，用无损的左闭右开区间（`range(start, stop)`）编码。
+
+方法参考：[直方图提升损失函数](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html)、[分组交叉验证](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html)、[嵌套选择与评估](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html)。

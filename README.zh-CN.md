@@ -52,7 +52,7 @@ cd SteamWeave
 python3.14 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 cp .env.example .env
-.venv/bin/python -m sg_agents.cli train --offline
+.venv/bin/python -m sg_agents.cli train --offline --method optimized
 .venv/bin/python scripts/service.py start
 ```
 
@@ -94,7 +94,23 @@ OPENAI_MODEL=your-gpt-model
 
 仅更换解释供应商可保留预测模型；提取缓存按供应商、模型、地址和协议隔离。千问地区地址必须与 Key 匹配，详见[接口配置说明](docs/TECHNICAL_MANUAL.zh-CN.md#8-api-供应商凭证与缓存来源)。
 
-## 已完成的实验
+## v2 优化结果
+
+新增 **18 次外层评估**，每次在训练期内用三折比较八个固定候选。优化当前曲线形状编码，加入维修后重置的历史曲线与变化率，并让绝对误差模型参与选择。当前曲线缺失时使用原版增强专家融合。
+
+| 场景 | 原版 MAE / adu | 优化 MAE / adu |
+| --- | ---: | ---: |
+| 轨迹分组五折 × 三种子 | 4.853 ± 0.405 | **4.089 ± 0.314** |
+| 本地服务固定留出集 | 5.094 | **4.077** |
+| 未来时段候选，三次运行 | **11.140** | 11.501 ± 0.029 |
+
+分组 MAE 下降约 **15.7%**，本地服务留出误差下降约 **20.0%**。未来时段候选未改善，因此保留原版时间检查点。优化区间更宽：分组平均宽度 35.072 adu，原版为 28.818 adu。当前曲线全部屏蔽时，点预测与原版一致；此前已经观测到的历史仍可使用。
+
+这是对已查看基准的探索性改进，可用性切换在首次缺失曲线诊断之后加入；不能视为新盲测或同条件超过论文的证明。候选与参数由训练内部选择，测试标签不进入预测特征。详见 [v2 优化报告](reports/optimization/OPTIMIZATION.zh-CN.md)、[逐折指标](reports/optimization/fold_metrics.csv)与[内层选择审计](reports/optimization/selection_audits.json)。
+
+原版专家输出仍展示用于诊断。曲线可用时，最终预测使用新预测头；缺失时使用原版专家融合。使用 `python -m sg_agents.cli optimize --offline` 升级已有匹配检查点，或按上方快速开始从头训练。回到原版可运行 `python -m sg_agents.cli train --offline --method legacy`。
+
+## 原版完整实验
 
 **23 次外层评估 · 151 个模型评估 · 300 个压力条件 · 6 次深度拟合。** 分组 CV 采用五折、三个种子；六项消融和压力测试覆盖种子 17 的完整五折。深度结构重建采用一个种子。
 

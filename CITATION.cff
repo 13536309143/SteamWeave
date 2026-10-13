@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use SteamWeave, cite the repository and the upstream dataset paper."
 title: "SteamWeave: Maintenance-aware Multimodal Prognostics Workbench"
-version: 1.1.0
+version: 1.2.0
 date-released: '2026-10-13'
 url: 'https://github.com/13536309143/SteamWeave'
 authors:

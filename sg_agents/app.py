@@ -38,6 +38,9 @@ class Runtime:
                 cached=joblib.load(cache_path)
                 if cached['fingerprint']==fp and cached.get('semantic_namespace','minimax-m27-legacy-v1')==get_settings().namespace:f=cached['features']
             if f is None:f=build_features(rows)
+            if 'curve_history' not in f:
+                from .optimization import causal_curve_history
+                f['curve_history']=causal_curve_history(rows,f)
             model_path=ARTIFACTS/'model.joblib'
             model=joblib.load(model_path) if model_path.exists() else None
             if model and model['fingerprint']!=fp:
@@ -66,7 +69,7 @@ async def lifespan(app):
     await asyncio.to_thread(runtime.load)
     yield
 
-app=FastAPI(title='SteamWeave · Maintenance-aware Multimodal Prognostics',version='1.1.0',lifespan=lifespan)
+app=FastAPI(title='SteamWeave · Maintenance-aware Multimodal Prognostics',version='1.2.0',lifespan=lifespan)
 app.mount('/static',StaticFiles(directory=ROOT/'static'),name='static')
 
 @app.middleware('http')
@@ -89,7 +92,8 @@ def health():
         provider={'connected':False,'model':get_settings().model,'provider':get_settings().provider}
     return {'status':'ok','model_ready':runtime.model is not None,'records':len(runtime.rows),
             'minimax':provider,'provider':get_settings().public(),'audit_provider':get_settings(audit=True).public(),
-            'credential_configured':get_settings().public()['credential_configured'],'model_warning':runtime.model_warning}
+            'credential_configured':get_settings().public()['credential_configured'],'model_warning':runtime.model_warning,
+            'prediction_method':'curve-history-v2' if runtime.model and runtime.model.get('optimized_head') else 'legacy-v1'}
 
 @app.get('/api/providers')
 def providers():
@@ -231,12 +235,14 @@ def export(device:int):
                              headers={'Content-Disposition':f'attachment; filename=device_{device}_predictions.csv'})
 
 @app.post('/api/train')
-def training():
+def training(method:str|None=None):
     with runtime.lock:
+        selected=method or ('optimized' if runtime.model and runtime.model.get('optimized_head') else 'legacy')
+        if selected not in ('legacy','optimized'):raise HTTPException(422,'method must be legacy or optimized')
         if runtime.job and runtime.job.poll() is None:raise HTTPException(409,'训练正在进行')
         log=ARTIFACTS/'training.log'
         with log.open('w') as out:
-            runtime.job=subprocess.Popen([sys.executable,'-u','-m','sg_agents.cli','train'],cwd=ROOT,
+            runtime.job=subprocess.Popen([sys.executable,'-u','-m','sg_agents.cli','train','--method',selected],cwd=ROOT,
                         stdout=out,stderr=subprocess.STDOUT,env=os.environ.copy())
         return {'status':'started','pid':runtime.job.pid}
 

@@ -21,7 +21,6 @@ from sg_agents.features import fusion_matrix,mask_features
 from sg_agents.features import build_features
 from sg_agents.modeling import estimator,EXPERTS,subset,expert_predictions,augment_fusion,interval,split_records
 from sg_agents.provider import read_cache
-from .paper_baseline import prepare_inputs,fit_predict
 
 SEEDS=(17,41,73)
 VARIANTS=('full','without_maintenance_agent','without_freshness','without_llm_semantics',
@@ -179,6 +178,7 @@ def run(args):
     features=data['features'];y=np.array([r.target for r in records],float);mapping=trajectory_groups(records)
     groups=np.array([mapping[r.device] for r in records]);nn_inputs=None
     if not args.skip_neural:
+        from .paper_baseline import prepare_inputs,fit_predict
         nn_inputs=prepare_inputs(records,features,ARTIFACTS/'research'/'glove_vocab.npz')
     delayed={lag:delayed_report_features(records,features,lag) for lag in (10,25,50)}
     manifest={'project':'SteamWeave','dataset_fingerprint':data['fingerprint'],'seeds':args.seeds,

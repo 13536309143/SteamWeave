@@ -3,7 +3,7 @@ const $=s=>document.querySelector(s);
 const state={devices:[],records:[],summary:null,current:null,requestId:0,trainingTimer:null};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString('zh-CN',{maximumFractionDigits:d,minimumFractionDigits:d}):'—';
-const names={numeric:'数值专家',image:'曲线专家',text:'文本专家',maintenance:'维护时序专家',fusion:'完整融合模型',single_model_direct_fusion:'单模型直接融合',fixed_expert_average:'专家固定平均',no_current_image:'屏蔽当前曲线',no_current_text:'屏蔽当前文本',no_image_or_text:'同时屏蔽曲线和文本',naturally_missing_image:'自然缺失曲线',repeated_text:'旧文本重复',new_repair:'新维修事件',long_horizon:'较长预测跨度'};
+const names={numeric:'数值专家',image:'曲线专家',text:'文本专家',maintenance:'维护时序专家',fusion:'最终预测模型',legacy_fusion:'原版融合（对照）',single_model_direct_fusion:'单模型直接融合',fixed_expert_average:'专家固定平均',no_current_image:'屏蔽当前曲线',no_current_text:'屏蔽当前文本',no_image_or_text:'同时屏蔽曲线和文本',naturally_missing_image:'自然缺失曲线',repeated_text:'旧文本重复',new_repair:'新维修事件',long_horizon:'较长预测跨度'};
 const providerName=p=>({minimax:'MiniMax',openai:'OpenAI GPT',qwen:'通义千问',custom:'自定义接口'}[p]||p);
 const partitions={test:'留出测试设备',calibration:'区间校准设备',train:'训练设备',custom:'新观察',untrained:'尚未训练'};
 function error(message){$('#errorBanner').textContent=message;$('#errorBanner').hidden=false;}
@@ -26,26 +26,26 @@ async function loadSummary(){
  $('#deviceCount').textContent=fmt(s.devices,0);$('#recordCount').textContent=fmt(s.records,0);$('#imageCount').textContent=fmt(s.image_available,0);$('#missingCount').textContent=`${fmt(s.image_missing,0)} 张空白或不可用曲线`;
  $('#trajectoryCount').textContent=`${s.trajectory_groups} 个输入轨迹组 · 重复轨迹合组`;
  $('#mae').textContent=fmt(s.report.fusion?.mae_adu);$('#connectionStatus').innerHTML=`${s.model_ready?'模型已就绪':'模型训练中'}<small>${h.minimax.connected?providerName(h.provider.provider)+' 接口已验证':providerName(h.provider.provider)+' 尚未验证'}</small>`;
- $('#connectionDot').classList.toggle('bad',!s.model_ready);$('#footerModel').textContent=h.provider.model||'';
+ $('#connectionDot').classList.toggle('bad',!s.model_ready);$('#footerModel').textContent=(h.provider.model||'')+' · '+(h.prediction_method==='curve-history-v2'?'曲线历史优化版':'原版融合');
  $('#providerDetails').innerHTML=dl([['供应商',providerName(h.provider.provider)],['模型',h.provider.model],['接口地址',h.provider.base_url||'—'],['后端 Key',h.credential_configured?'已配置（不展示）':'未配置'],['唯一报告缓存',`${s.minimax_reports} / ${s.unique_reports}`],['最近连接验证',h.minimax.checked_at?new Date(h.minimax.checked_at).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'}):'尚未验证']]);
  $('#citation').textContent=`数据集引用：${s.citation}`;
  const r=s.report;
  if(r.fusion){
   const sp=r.split,gc=sp.trajectory_group_counts;$('#splitDescription').textContent=`${gc.train} 个训练轨迹组、${gc.calibration} 个校准组、${gc.test} 个测试组（分别含 ${sp.train_devices.length}、${sp.calibration_devices.length}、${sp.test_devices.length} 个设备目录）。测试设备：${sp.test_devices.join('、')}。`;
   $('#evaluationMetrics').innerHTML=[['MAE / adu',fmt(r.fusion.mae_adu)],['RMSE / adu',fmt(r.fusion.rmse_adu)],['实测区间覆盖率',fmt(r.fusion.interval_coverage*100,1)+'%'],['平均区间宽度 / adu',fmt(r.fusion.interval_width_adu)]].map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('');
-  $('#comparisonTable').innerHTML=table([['fusion',r.fusion],...Object.entries(r.experts),...Object.entries(r.ablation)]);$('#stressTable').innerHTML=table(Object.entries(r.stress_tests));
+  $('#comparisonTable').innerHTML=table([['fusion',r.fusion],...(r.legacy_fusion?[['legacy_fusion',r.legacy_fusion]]:[]),...Object.entries(r.experts),...Object.entries(r.ablation)]);$('#stressTable').innerHTML=table(Object.entries(r.stress_tests));
  }else{$('#splitDescription').textContent='模型尚未训练完成，评估结果将在训练后生成。';}
  const temporal=s.temporal_report;
  if(temporal?.fusion){
   const counts=temporal.split.record_counts;
   $('#temporalDescription').textContent=`按每台设备的目标巡检事件先后切分：${counts.train} 条训练、${counts.calibration} 条校准、${counts.test} 条未来测试记录。训练标签须在截止时点前已获得；此结果与新设备泛化评估回答不同问题。`;
-  $('#temporalTable').innerHTML=table([['fusion',temporal.fusion],...Object.entries(temporal.ablation)]);
+  $('#temporalTable').innerHTML=table([['fusion',temporal.fusion],...(temporal.legacy_fusion?[['legacy_fusion',temporal.legacy_fusion]]:[]),...Object.entries(temporal.ablation)]);
  }
 }
 async function loadDevices(){state.devices=await api('/api/devices');$('#deviceSelect').innerHTML=state.devices.map(d=>`<option value="${d.device}">SG ${String(d.device).padStart(2,'0')} · ${partitions[d.partition]}</option>`).join('');const test=state.devices.find(d=>d.partition==='test');if(test)$('#deviceSelect').value=test.device;await loadRecords();}
 async function loadRecords(){const device=Number($('#deviceSelect').value);state.records=await api(`/api/devices/${device}/records`);$('#recordSelect').innerHTML=state.records.map(r=>`<option value="${r.index}">t = ${fmt(r.time,0)} atu · 距巡检 ${fmt(r.horizon,0)} atu${!r.image_available?' · 曲线缺失':''}${r.new_repair?' · 维修变化':''}</option>`).join('');const useful=state.records.find(r=>r.index>5&&r.image_available);if(useful)$('#recordSelect').value=useful.index;if(state.summary.model_ready)await runPrediction();}
 function renderPrediction(p){
- state.current=p;$('#prediction').textContent=fmt(p.prediction_adu);$('#interval').textContent=`标称 90% 区间 ${fmt(p.interval_90_adu[0])}–${fmt(p.interval_90_adu[1])} adu`;$('#horizon').textContent=`跨度 ${fmt(p.horizon_atu,0)} atu → 巡检 t=${fmt(p.next_inspection_at,0)}`;
+ state.current=p;$('#prediction').textContent=fmt(p.prediction_adu);$('#forecastMethod').textContent=p.prediction_method==='curve-history-v2'?'曲线历史优化版':'原版融合';$('#interval').textContent=`标称 90% 区间 ${fmt(p.interval_90_adu[0])}–${fmt(p.interval_90_adu[1])} adu`;$('#horizon').textContent=`跨度 ${fmt(p.horizon_atu,0)} atu → 巡检 t=${fmt(p.next_inspection_at,0)}`;
  $('#partition').textContent=partitions[p.evaluation_partition]||p.evaluation_partition;
  $('#targetNote').textContent=`数据集目标：${fmt(p.evaluation_target_adu)} adu。${p.evaluation_partition==='train'?'此设备参与训练，当前误差不能代表泛化性能。':'标签仅用于结果对照，不进入本次推理或模型解释。'}`;
  $('#warnings').innerHTML=p.warnings.map(w=>`<p>· ${esc(w)}</p>`).join('');

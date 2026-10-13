@@ -12,7 +12,8 @@ from .llm_settings import get_settings
 
 def main():
     parser=argparse.ArgumentParser(description='蒸汽发生器多 agent 预测')
-    parser.add_argument('command',choices=['prepare','train','check-api'])
+    parser.add_argument('command',choices=['prepare','train','optimize','check-api'])
+    parser.add_argument('--method',choices=['legacy','optimized'],default='legacy')
     parser.add_argument('--split',choices=['device','temporal'],default='device')
     parser.add_argument('--offline',action='store_true',help='不请求模型 API；缺少语义缓存时显式使用缺失语义特征')
     parser.add_argument('--provider',choices=['minimax','openai','qwen','custom'])
@@ -48,5 +49,8 @@ def main():
     feature_tmp.replace(ARTIFACTS/'features.joblib')
     print(json.dumps(summary,ensure_ascii=False,indent=2),flush=True)
     if args.command=='train':train(rows,f,mode=args.split,progress=lambda s:print(s,flush=True))
+    if args.command=='optimize' or (args.command=='train' and args.method=='optimized'):
+        from .optimized_training import train_optimized
+        train_optimized(rows,f,mode=args.split,progress=lambda s:print(s,flush=True))
 
 if __name__=='__main__':main()

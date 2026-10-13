@@ -30,13 +30,22 @@ def verify(with_minimax=False):
         assert prediction['evaluation_partition']=='test'
         assert len(prediction['trace'])==7 and prediction['text_semantics']['source']=='minimax'
         assert prediction['interval_90_adu'][0]<=prediction['interval_90_adu'][1];checks.append('heldout_record_prediction')
+        optimized=health.get('prediction_method')=='curve-history-v2'
+        if optimized:
+            assert prediction['prediction_method']=='curve-history-v2'
+            assert prediction['forecast_head']!='legacy_missing_modality_fusion'
+            assert abs(sum(prediction['interval_90_adu'])/2-prediction['prediction_adu'])<1e-8
         for image,text in [(True,False),(False,True),(True,True)]:
             out=client.post('/api/predict',json=dict(request,hide_image=image,hide_text=text));out.raise_for_status()
             p=out.json()
             if image:assert p['experts'][1]['status']=='unavailable'
             if text:assert p['experts'][2]['status']=='unavailable'
             assert isinstance(p['prediction_adu'],float)
+            if optimized and image:
+                assert p['forecast_head']=='legacy_missing_modality_fusion'
+                assert p['prediction_adu']==p['legacy_prediction_adu']
         checks.append('missing_modality_paths')
+        if optimized:checks.append('optimized_route_and_interval')
         history=get(f'/api/devices/{d}/history?through={r["time"]}')
         assert all(v['time']<=r['time'] for v in history);checks.append('history_cutoff')
         image=client.get(f'/api/records/{d}/{r["index"]}/image');assert image.status_code==200 and image.content.startswith(b'\x89PNG')
@@ -48,6 +57,7 @@ def verify(with_minimax=False):
         custom=client.post('/api/predict/custom',data=data,files={'curve':('curve.png',image.content,'image/png')})
         custom.raise_for_status();custom=custom.json();assert custom['evaluation_partition']=='custom'
         assert custom['semantic_status']=='completed' and custom['image']['available'];checks.append('custom_upload_prediction')
+        assert abs(custom['prediction_adu']-prediction['prediction_adu'])<1e-8;checks.append('custom_matches_known_observation')
         denied=client.post('/api/provider/check',headers={'Origin':'https://unrelated.example'})
         assert denied.status_code==403;checks.append('same_origin_management')
         assert client.get('/static/../.env').status_code!=200;checks.append('credential_not_served')
