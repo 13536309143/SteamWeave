@@ -1,0 +1,15 @@
+{
+  "title": "A multi-branch deep neural network model for failure prognostics based on multimodal data",
+  "authors": ["Zhe Yang", "Piero Baraldi", "Enrico Zio"],
+  "year": 2021,
+  "doi": "10.1016/j.jmsy.2021.01.007",
+  "source": "https://www.researchgate.net/publication/349102644_A_multi-branch_deep_neural_network_model_for_failure_prognostics_based_on_multimodal_data",
+  "location": "Table 3 and Section 4.3",
+  "protocol": "Five folds of ten trajectories each; remaining forty for development; 5% of training records used for validation; fold metrics averaged.",
+  "reported": {
+    "three_branch_dnn": {"mae_adu": 3.20, "mse_adu2": 45.57, "mre_percent": 6.76, "training_seconds": 17912},
+    "rf_numeric": {"mae_adu": 4.80, "mse_adu2": 61.78, "mre_percent": 9.82, "training_seconds": 6},
+    "svr_numeric": {"mae_adu": 6.93, "mse_adu2": 78.58, "mre_percent": 13.10, "training_seconds": 7}
+  },
+  "comparison_status": "Reference only. Not pooled with locally rerun experiments. Original checkpoints, exact split seed, optimizer and training schedule unavailable in the consulted full text."
+}

@@ -1,0 +1,32 @@
+{
+  "project": "SteamWeave",
+  "dataset_fingerprint": "155d422a62b0b7d61f84d4df9ce09a75ebdc939d95cb9c14bb8f65c303cc1b5d",
+  "seeds": [
+    17,
+    41,
+    73
+  ],
+  "neural_seeds": [
+    17
+  ],
+  "neural_protocols": [
+    "grouped_cv",
+    "temporal"
+  ],
+  "max_epochs": 80,
+  "patience": 12,
+  "protocols": [
+    "grouped_cv",
+    "paper_device_cv",
+    "temporal"
+  ],
+  "python": "3.14.8",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "semantic_cache_sha256": "dc81986baa8a037edb2e824a8907a44fc7ec6374545f0a36594b96ecd004cec8",
+  "note": "All hyperparameters fixed before new-suite evaluation. Diagnostic protocol is not an independence claim.",
+  "completed_outer_evaluations": 23,
+  "completed_model_evaluations": 151,
+  "pressure_test_cases": 300,
+  "neural_fits": 6,
+  "neural_budget_cap_fits": 1
+}

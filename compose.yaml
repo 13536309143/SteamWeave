@@ -1,0 +1,13 @@
+services:
+  sg-lab:
+    build: .
+    ports:
+      - "127.0.0.1:8787:8787"
+    env_file: .env
+    environment:
+      DATASET_PATH: /app/dataset
+      ARTIFACT_PATH: /app/artifacts
+    volumes:
+      - "./Multimodal data for prognostics:/app/dataset:ro"
+      - "./artifacts:/app/artifacts"
+    restart: unless-stopped

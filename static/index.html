@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SteamWeave · 多 Agent 退化预测</title><link rel="stylesheet" href="/static/styles.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/"><span class="brand-icon">SW</span><div>SteamWeave<small>多模态预测实验室</small></div></a>
+  <div class="nav-label">研究工作台</div>
+  <nav><button class="nav active" data-tab="predict">◉ <span>设备预测</span></button><button class="nav" data-tab="custom">＋ <span>新观察预测</span></button><button class="nav" data-tab="evaluate">▥ <span>评估与实验</span></button><button class="nav" data-tab="system">⚙ <span>系统管理</span></button></nav>
+  <div class="sidebar-note"><span class="live-dot"></span> 维护感知 · 证据融合<p>以当前可用信息预测<br>下一次计划巡检退化水平</p></div>
+  <div class="sidebar-bottom"><span id="connectionDot" class="live-dot"></span><div id="connectionStatus">正在连接后端<small>本地运行 · Key 仅留在后端</small></div></div>
+</aside>
+<main>
+<header><div><span class="eyebrow">STEAM GENERATOR PROGNOSTICS</span><h1 id="pageTitle">设备预测</h1></div><a class="button ghost" href="/docs" target="_blank" rel="noopener">API 文档 ↗</a></header>
+<div id="errorBanner" class="error-banner" hidden role="alert"></div>
+<section class="hero"><div><span class="pill">MULTI-AGENT SYSTEM</span><h2>读懂证据，预测下一次巡检。</h2><p>结合数值、曲线图像、巡检文本与维护历史，输出退化预测和可追踪证据。</p></div><div class="hero-art" aria-hidden="true"><span>数值</span><span>曲线</span><b>融合</b><span>文本</span><span>维护</span></div></section>
+<section class="stats"><article><span>设备目录</span><strong id="deviceCount">—</strong><small id="trajectoryCount">正在检查重复轨迹</small></article><article><span>观察记录</span><strong id="recordCount">—</strong><small>按设备与时间组织</small></article><article><span>可用曲线</span><strong id="imageCount">—</strong><small id="missingCount">正在检测空白图片</small></article><article><span>测试集 MAE</span><strong id="mae">—</strong><small>adu · 重复轨迹整组留出</small></article></section>
+
+<section class="tab-panel" id="tab-predict">
+ <div class="panel selector"><div><label for="deviceSelect">选择设备</label><select id="deviceSelect"></select></div><div class="wide"><label for="recordSelect">观察时点</label><select id="recordSelect"></select></div><div class="checkboxes"><label><input type="checkbox" id="hideImage">屏蔽当前曲线</label><label><input type="checkbox" id="hideText">屏蔽当前文本</label></div><button id="predictButton" class="button primary">运行协作预测 →</button></div>
+ <div class="prediction-layout">
+  <div class="main-column">
+   <article class="panel prediction-panel"><div class="panel-head"><h3>下一次巡检退化预测</h3><span id="partition" class="tag">—</span></div><div class="prediction-number"><strong id="prediction">—</strong><span>adu</span></div><div class="prediction-meta"><span id="interval">预测区间 —</span><span id="horizon">预测跨度 —</span></div><p id="targetNote" class="muted">选择观察记录后开始预测。</p><div id="warnings" class="warnings"></div></article>
+   <article class="panel"><div class="panel-head"><div><h3>设备预测历史</h3><p class="muted">各观察时点对其下一次巡检的预测；仅展示截至选定观察的记录。</p></div><a id="exportLink" class="text-link" href="#">导出 CSV ↓</a></div><div class="chart-legend"><span class="legend teal">预测</span><span class="legend gray">数据集目标</span><span class="legend orange">维修变化</span></div><div id="historyChart" class="chart" role="img" aria-label="设备历史预测曲线"></div></article>
+   <article class="panel"><div class="panel-head"><h3>专家协作记录</h3><span class="tag subtle">7 个职责模块</span></div><div id="agentTrace" class="agent-trace"></div></article>
+  </div>
+  <div class="side-column">
+   <article class="panel evidence-panel"><div class="panel-head"><h3>当前可用证据</h3><span id="imageTag" class="tag">—</span></div><img id="curveImage" class="curve-image" alt="当前观察的瞬态曲线图片"><div class="evidence-label">巡检与维护报告</div><blockquote id="reportText">—</blockquote><dl id="numericEvidence" class="numeric-evidence"></dl><div id="semanticEvidence" class="semantic-evidence"></div></article>
+   <article class="panel"><div class="panel-head"><h3>模型证据解释</h3><span id="llmTag" class="tag subtle">按需调用</span></div><p class="muted">根据专家预测和当前证据生成说明，预测数值由训练模型输出。</p><label>解释 API<select id="auditProvider"></select></label><button id="explainButton" class="button outline full" style="margin-top:10px">生成审核解释</button><div id="explanation" class="explanation"></div></article>
+  </div>
+ </div>
+</section>
+
+<section class="tab-panel" id="tab-custom" hidden>
+ <div class="custom-layout"><article class="panel"><div class="panel-head"><h3>输入新的观察记录</h3><span class="tag subtle">可上传 TIFF / PNG / JPEG</span></div><p class="muted">同一设备仅使用早于本次观察的已有输入历史。新报告会调用已配置的模型接口提取语义。</p><form id="customForm"><div class="form-grid"><label>设备 ID<input required name="device" type="number" min="1" value="51"></label><label>观察时间 / atu<input required name="time" type="number" min="0" step="any" value="100"></label><label>距下一次巡检 / atu<input required name="horizon" type="number" min="0" step="any" value="25"></label><label>距最近维修 / atu<input required name="since_repair" type="number" min="0" step="any" value="10"></label><label>化学清洗次数<input required name="chemical_count" type="number" min="0" step="1" value="0"></label><label>最近化学清洗后的机械清洗次数<input required name="mechanical_count" type="number" min="0" step="1" value="1"></label></div><label class="form-label">巡检与维护报告<textarea name="text" rows="4" placeholder="粘贴本次可用报告；可以留空"></textarea></label><label class="upload-zone">选择瞬态曲线图片<input name="curve" type="file" accept=".tiff,.tif,.png,.jpg,.jpeg,.webp"><small>留空时使用缺失曲线预测路径 · 最大 10 MB</small></label><button class="button primary full" id="customButton" type="submit">预测新观察 →</button></form></article><article class="panel"><h3>预测结果</h3><div id="customResult" class="empty-state">输入数值、报告和可用曲线后运行预测。<p>输出包括预测区间、专家结果、维护上下文和质量标记。</p></div></article></div>
+</section>
+
+<section class="tab-panel" id="tab-evaluate" hidden>
+ <article class="panel"><div class="panel-head"><h3>按轨迹组留出的测试结果</h3><span class="tag">重复轨迹不跨分区</span></div><p id="splitDescription" class="muted"></p><div id="evaluationMetrics" class="evaluation-grid"></div><p class="muted">区间为标称 90% 的巡检事件校准区间。覆盖率是实测结果，不能视为对其他分布的保证。</p></article>
+ <article class="panel"><h3>专家与融合对照</h3><div id="comparisonTable" class="table-scroll"></div></article>
+ <article class="panel"><h3>已有设备未来时段评估</h3><p id="temporalDescription" class="muted">时间切分结果尚未生成。</p><div id="temporalTable" class="table-scroll"></div></article>
+ <article class="panel"><h3>缺失模态与维护场景</h3><div id="stressTable" class="table-scroll"></div><p class="muted">屏蔽实验移除当前模态专家；已经获得的历史维护信息仍可使用。</p></article>
+ <article class="panel"><h3>评估协议</h3><p class="body-text">50 个设备目录中，有 20 对设备的时间、数值和文本轨迹相同，按 30 个输入轨迹组划分。重复轨迹不跨训练、校准、测试和折外验证分区，同组目标巡检事件反向加权。时间重建仅访问当前及过去输入，目标退化标签仅用于训练和评估。</p><p class="muted">另支持 CLI 的时间事件切分实验：python -m sg_agents.cli train --split temporal --offline</p></article>
+</section>
+
+<section class="tab-panel" id="tab-system" hidden>
+ <div class="custom-layout"><article class="panel"><h3>模型 API 后端连接</h3><dl id="providerDetails" class="numeric-evidence"></dl><button id="checkApiButton" class="button outline">测试当前提取 API</button><p class="muted">支持 MiniMax、OpenAI GPT、千问和自定义兼容接口。Key 在后端配置。解释 API 可以单独选择。</p></article><article class="panel"><h3>模型训练</h3><p class="body-text">重新提取未缓存的巡检报告，计算曲线与历史特征，生成按轨迹组划分的评估结果和模型文件。</p><button id="trainButton" class="button primary">重新训练模型</button><button id="reloadButton" class="button outline">加载最新模型</button><pre id="trainingLog">暂无新的训练任务。</pre></article></div>
+ <article class="panel"><h3>数据与实现说明</h3><p class="body-text">图片按序号与观察记录对齐；带坐标轴的空白图片标记为缺失曲线。维修时间从观察时间与距最近维修时间反推。文本连续重复段用于估计观测年龄，真实生成时间保留未知。系统用于本模拟数据的研究与比较。</p><p id="citation" class="muted"></p></article>
+</section>
+<footer>SteamWeave · 数值预测由监督学习模型输出 · atu / adu 为任意单位<span id="footerModel"></span></footer>
+</main><script src="/static/app.js"></script>
+</body></html>

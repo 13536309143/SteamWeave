@@ -1,0 +1,1 @@
+{"status": "complete", "label": "grouped_cv/seed=17/fold=4", "models": ["full", "fixed_expert_average", "without_maintenance_agent", "without_freshness", "without_llm_semantics", "without_modality_dropout", "without_text_agent", "without_image_agent", "direct_feature_fusion", "rf_numeric_100", "svr_numeric_c100", "paper_dnn_reconstruction"]}

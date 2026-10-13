@@ -1,0 +1,149 @@
+New equipment. Everything is fine.
+New equipment. Everything is fine.
+New equipment. Everything is fine.
+no failure
+no failure
+no failure
+no failure
+no failure
+no failure
+no failure
+no failure
+average level condition. the mechanical cleaning is done. after that the sg is ok
+average level condition. the mechanical cleaning is done. after that the sg is ok
+average level condition. the mechanical cleaning is done. after that the sg is ok
+not much pollution
+not much pollution
+not much pollution
+the contamination accumulates a lot. we use high pressure water to flush it. after that it is ok
+the contamination accumulates a lot. we use high pressure water to flush it. after that it is ok
+the contamination accumulates a lot. we use high pressure water to flush it. after that it is ok
+the contamination accumulates a lot. we use high pressure water to flush it. after that it is ok
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+the condition is moderate. we do a mechanical cleaning. now there's no failure
+some contamination in sg. we remove contamination. after that the contamination is in early state
+some contamination in sg. we remove contamination. after that the contamination is in early state
+some contamination in sg. we remove contamination. after that the contamination is in early state
+it needs at least a mechanical cleaning. we use high pressure water spray to flush it. now low risk
+it needs at least a mechanical cleaning. we use high pressure water spray to flush it. now low risk
+it needs at least a mechanical cleaning. we use high pressure water spray to flush it. now low risk
+it needs at least a mechanical cleaning. we use high pressure water spray to flush it. now low risk
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+equipment can not work longer. we use chemical detergent to clean equipment. now all is well with equipment
+everything is ok
+everything is ok
+everything is ok
+everything is ok
+everything is ok
+everything is ok
+we should notice the deposit. we use high pressure water to flush it. now it is not so bad
+we should notice the deposit. we use high pressure water to flush it. now it is not so bad
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is moderate. we remove deposit. now everything is all right
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the sg should be shut down. the chemical cleaning is done. now ok
+the sg should be shut down. the chemical cleaning is done. now ok
+the sg should be shut down. the chemical cleaning is done. now ok
+the sg should be shut down. the chemical cleaning is done. now ok
+ok
+ok
+ok
+ok
+ok
+it seems not normal. we do a mechanical cleaning. after that it doesn't have failure
+it seems not normal. we do a mechanical cleaning. after that it doesn't have failure
+it seems not normal. we do a mechanical cleaning. after that it doesn't have failure
+it seems not normal. we do a mechanical cleaning. after that it doesn't have failure
+it seems not normal. we do a mechanical cleaning. after that it doesn't have failure
+not much contamination
+not much contamination
+not much contamination
+not much contamination
+not much contamination
+not much contamination
+not much contamination
+the sg doesn't work well. the chemical detergent is used to clean the sg. after that there's no failure
+the sg doesn't work well. the chemical detergent is used to clean the sg. after that there's no failure
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+the condition is acceptable
+sg needs at least a mechanical cleaning. we remove corrosion product. now sg is in a good condition
+the deposit is in early stage
+the deposit is in early stage
+the deposit is in early stage
+the deposit is in early stage
+the deposit is in early stage
+the deposit is in early stage
+equipment will fail recently. the chemical cleaning is done. after that all is going well
+equipment will fail recently. the chemical cleaning is done. after that all is going well
+equipment will fail recently. the chemical cleaning is done. after that all is going well
+equipment will fail recently. the chemical cleaning is done. after that all is going well
+equipment will fail recently. the chemical cleaning is done. after that all is going well
+the contamination is in early stage
+the contamination is in early stage
+the contamination is in early stage
+the contamination is in early stage
+the contamination is in early stage
+the contamination is in early stage
+the contamination is in early stage
+unexpected shut down. generator is cleaned using chemical detergent with high temperature. now generator works properly
+unexpected shut down. generator is cleaned using chemical detergent with high temperature. now generator works properly
+unexpected shut down. generator is cleaned using chemical detergent with high temperature. now generator works properly
+unexpected shut down. generator is cleaned using chemical detergent with high temperature. now generator works properly
+unexpected shut down. generator is cleaned using chemical detergent with high temperature. now generator works properly
+the dirt accumulates a lot. we use high pressure water spray to flush sg. now mild dirt
+the dirt accumulates a lot. we use high pressure water spray to flush sg. now mild dirt
+the dirt accumulates a lot. we use high pressure water spray to flush sg. now mild dirt
+the dirt accumulates a lot. we use high pressure water spray to flush sg. now mild dirt
+it can not work longer. it is cleaned using chemical detergent. after that everything is going well
+it can not work longer. it is cleaned using chemical detergent. after that everything is going well
+it can not work longer. it is cleaned using chemical detergent. after that everything is going well
+it can not work longer. it is cleaned using chemical detergent. after that everything is going well
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+sg is a little abnormal. the deposit is removed. after that minor deposit
+unexpected shut down. the chemical cleaning is done. now everything is all right
+unexpected shut down. the chemical cleaning is done. now everything is all right
+unexpected shut down. the chemical cleaning is done. now everything is all right
+unexpected shut down. the chemical cleaning is done. now everything is all right
+unexpected shut down. the chemical cleaning is done. now everything is all right
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+we should shut down and clean sg. we use chemical detergent to clean sg. after that sg works greatly
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual
+unexpected shut down. we use chemical detergent to clean it. after that as usual

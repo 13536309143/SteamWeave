@@ -1,0 +1,8 @@
+.env
+.venv
+.git
+artifacts
+Multimodal data for prognostics
+__pycache__
+.pytest_cache
+tests

@@ -1,0 +1,93 @@
+{
+  "records": 7626,
+  "device_directories": 50,
+  "input_trajectory_groups": 30,
+  "duplicate_pairs": [
+    [
+      1,
+      31
+    ],
+    [
+      2,
+      32
+    ],
+    [
+      3,
+      33
+    ],
+    [
+      4,
+      34
+    ],
+    [
+      5,
+      35
+    ],
+    [
+      6,
+      36
+    ],
+    [
+      7,
+      37
+    ],
+    [
+      8,
+      38
+    ],
+    [
+      9,
+      39
+    ],
+    [
+      10,
+      40
+    ],
+    [
+      11,
+      41
+    ],
+    [
+      12,
+      42
+    ],
+    [
+      13,
+      43
+    ],
+    [
+      14,
+      44
+    ],
+    [
+      15,
+      45
+    ],
+    [
+      16,
+      46
+    ],
+    [
+      17,
+      47
+    ],
+    [
+      18,
+      48
+    ],
+    [
+      19,
+      49
+    ],
+    [
+      20,
+      50
+    ]
+  ],
+  "new_repair_observations": 1133,
+  "consecutive_reused_text_observations": 6093,
+  "naturally_observed_repair_since_text": 0,
+  "invalid_reconstructed_repair_times": 0,
+  "dataset_fingerprint": "155d422a62b0b7d61f84d4df9ce09a75ebdc939d95cb9c14bb8f65c303cc1b5d",
+  "scope": "Audit of this local dataset copy; does not establish that the paper authors used duplicate trajectories."
+}

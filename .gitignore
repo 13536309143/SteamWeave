@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+artifacts/
+*.log
+.DS_Store
+*.zip
+*.joblib
+*.pt
+*.pth
+*.npz
+.env.*
+!.env.example
+!config/*.env.example
+research_private/
